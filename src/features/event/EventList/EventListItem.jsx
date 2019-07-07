@@ -1,0 +1,53 @@
+import React,{Component} from 'react';
+import {Segment,Item,Icon,Button,List} from 'semantic-ui-react';
+import EventListAttendee from './EventListAttendee';
+
+class EventListItem extends Component {
+
+    render(){
+        //destructuring this.props
+        const {event} = this.props;
+        return(
+                 <Segment.Group>
+
+                    <Segment>
+                      <Item.Group>
+                        <Item>
+                          <Item.Image size="tiny" circular src={event.hostPhotoURL} />
+                          <Item.Content>
+                            <Item.Header>Event Title</Item.Header>
+                            <Item.Description>
+                              Hosted by {event.hostedBy}
+                            </Item.Description>
+                          </Item.Content>
+                        </Item>
+                      </Item.Group>
+                    </Segment>
+
+                    <Segment>
+                      <span>
+                        <Icon name="clock" /> {event.date} _
+                        <Icon name="marker" /> {event.venue}
+                      </span>
+                    </Segment>
+
+                    <Segment secondary>
+                      <List horizontal>
+                        {/* todo: attendees go here */}
+                        {event.attendees && event.attendees.map(attendee => (
+                            <EventListAttendee key={attendee.id} attendee={attendee} />
+                        ))}
+                      </List>
+                    </Segment>
+
+                    <Segment clearing>
+                        <span>{event.description}</span>
+                      <Button as='a' color="teal" floated="right" content="View" />
+                    </Segment>
+        
+                  </Segment.Group>
+        )
+    }
+}
+
+export default EventListItem;
