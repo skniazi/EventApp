@@ -10,7 +10,7 @@ import cuid from 'cuid';
       {
         id: '1',
         title: 'Trip to Tower of London',
-        date: '2018-03-27T11:00:00+00:00',
+        date: '2018-03-27',
         category: 'culture',
         description:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
@@ -34,7 +34,7 @@ import cuid from 'cuid';
       {
         id: '2',
         title: 'Trip to Punch and Judy Pub',
-        date: '2018-03-28T14:00:00+00:00',
+        date: '2018-03-28',
         category: 'drinks',
         description:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
@@ -64,15 +64,33 @@ import cuid from 'cuid';
 
     state = {
       events: eventsFromDashboard,
-      isOpen: false
+      isOpen: false,
+      selectedEvent:null
     }
 
-    toggleIsOpen = () => {
-        this.setState(({isOpen})=>({
-            isOpen:!isOpen
-        }))
+    //For toggling show/hide
+
+    // toggleIsOpen = () => {
+    //     this.setState(({isOpen})=>({
+    //         isOpen:!isOpen
+    //     }))
+    // }
+
+    handleFormOpen = () => {
+      this.setState({
+        isOpen:true,
+        selectedEvent:null
+        
+      })
     }
 
+    handleFormCancel =() =>{
+      this.setState({
+        isOpen:false
+      })
+    }
+
+    //Creating an Event
     handleCreateEvent = (newEvent) =>{
       newEvent.id = cuid();
       newEvent.hostPhotoURL = '/assets/user.png';
@@ -82,23 +100,59 @@ import cuid from 'cuid';
       }))
     }
 
+    //Reading or Selecting an Event
+    handleSelectEvent = (event) =>{
+      //console.log(evt);
+      this.setState({
+        isOpen:true,
+        selectedEvent:event
+      })
+      
+      console.log(event); 
+    }
+
+    //for updating an event
+    handleUpdateEvent = (updatedEvent) =>{
+      this.setState( ({events}) => ({
+          events:events.map(event => {
+            if(event.id===updatedEvent.id){
+              //console.log(updatedEvent.id);
+              return {...updatedEvent}
+              
+            }else{
+              return event
+            }
+          })
+      }))
+    }
+
+    //for deleting an Event
+    handleDeleteEvent = (id) => {
+      this.setState(({events}) => ({
+          events: events.filter(e => e.id !== id)
+      })
+    )
+  }
     render(){
 
-      const {events,isOpen} = this.state;
+      const {events,isOpen,selectedEvent} = this.state;
 
         return(
             <Grid>
 
                 <Grid.Column width={10}>
-                    <EventList events={events}/>
+                    <EventList events={events} selectEvent = {this.handleSelectEvent} deleteEvent={this.handleDeleteEvent}/>
                 </Grid.Column>
 
                 <Grid.Column width={6}>
-                    <Button onClick={this.toggleIsOpen}  positive content='Create Event' />
+                    <Button onClick={this.handleFormOpen}  positive content='Create Event' />
                     {isOpen && 
                     <EventForm
-                     cancelForm = {this.toggleIsOpen} 
+                     key={selectedEvent?selectedEvent.id:null}
+                     selectedEvent={selectedEvent}
+                     cancelForm = {this.handleFormCancel} 
                      createEvent = {this.handleCreateEvent}
+                     updatedEvent = {this.handleUpdateEvent}
                      />
                      }
                     

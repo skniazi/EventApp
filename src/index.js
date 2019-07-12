@@ -3,11 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app/layout/App';
 import * as serviceWorker from './serviceWorker';
+import { BrowserRouter } from 'react-router-dom';
 
 const rootEl = document.getElementById('root');
 
 let render = () =>{
-    ReactDOM.render(<App />, rootEl);
+    //Add BrowserRouter and put App Compononent inside as child component
+    ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, rootEl);
 }
 
 //For adding hot-module

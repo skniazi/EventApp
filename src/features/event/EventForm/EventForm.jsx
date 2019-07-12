@@ -14,11 +14,27 @@ class EventForm extends Component{
     hostedBy: '' 
   }
 
+
+  //For populating the form with Event on the left side
+  //when clicked view
+  componentDidMount(){
+    if(this.props.selectedEvent !== null){
+      this.setState({
+        ...this.props.selectedEvent
+      })
+    }
+  }
+
   //using uncontrolled form
   submitForm = (evt) => {
     evt.preventDefault();
-    console.log(this.state);
-    this.props.createEvent(this.state);
+    if(this.state.id){
+      this.props.updatedEvent(this.state);
+    }
+    //console.log(this.state);
+    else{
+      this.props.createEvent(this.state);
+    }
   } 
 
   //using controlled form
