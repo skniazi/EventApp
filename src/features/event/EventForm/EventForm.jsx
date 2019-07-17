@@ -1,12 +1,16 @@
 import React , { Component } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { createEvent, updateEvent } from './../eventActions';
+import cuid from 'cuid';
 
 
+//connecting this component to our redux store
+//MapStateToProps i-e it helps to fetch the state from the store
+const mapState = (state,ownProps) => {
+  const eventId = ownProps.match.params.id;
 
-
-class EventForm extends Component{
-
-  state = {
+  let event ={
     title: '',
     date: '',
     city: '',
@@ -14,26 +18,47 @@ class EventForm extends Component{
     hostedBy: '' 
   }
 
-
-  //For populating the form with Event on the left side
-  //when clicked view
-  componentDidMount(){
-    if(this.props.selectedEvent !== null){
-      this.setState({
-        ...this.props.selectedEvent
-      })
-    }
+  if(eventId && state.events.length>0){
+    event = state.events.filter(event => event.id === eventId)[0];
   }
+
+  return{
+    event
+  }
+}
+
+//MapDispatchToProps
+const actions ={
+  createEvent,
+  updateEvent
+}
+
+
+class EventForm extends Component{
+
+  state = {
+    ...this.props.event
+  };
+
+
 
   //using uncontrolled form
   submitForm = (evt) => {
     evt.preventDefault();
     if(this.state.id){
-      this.props.updatedEvent(this.state);
+      this.props.updateEvent(this.state);
+      this.props.history.push(`/events/${this.state.id}`);
     }
     //console.log(this.state);
     else{
-      this.props.createEvent(this.state);
+      //create object for storing additional items
+      const newEvent = {
+        ...this.state,
+        id:cuid(),
+        hostPhotoURL:'/assets/user.png'
+      }
+      this.props.createEvent(newEvent);
+      this.props.history.push(`/events/${newEvent.id}`);
     }
   } 
 
@@ -48,7 +73,7 @@ class EventForm extends Component{
   }
   
     render(){
-      const {cancelForm} = this.props;
+    
       const {title,date,city,venue,hostedBy} = this.state;
 
         return(
@@ -106,7 +131,7 @@ class EventForm extends Component{
                         Submit
                       </Button>
 
-                      <Button onClick={cancelForm} type="button">Cancel</Button>
+                      <Button onClick={this.props.history.goBack} type="button">Cancel</Button>
 
                     </Form>
 
@@ -115,4 +140,4 @@ class EventForm extends Component{
     }
 }
 
-export default EventForm;
+export default connect(mapState,actions) (EventForm);
